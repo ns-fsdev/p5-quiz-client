@@ -1,3 +1,9 @@
+/*
+   Quiz-CLIENT
+   Dashboard.js
+*/
+
+
 import logo from './logo.svg';
 import './App.css';
 

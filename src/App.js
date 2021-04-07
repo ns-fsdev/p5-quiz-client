@@ -1,3 +1,9 @@
+/*
+   Quiz-CLIENT
+   APP.js
+*/
+
+
 import logo from './logo.svg';
 import './App.css';
 import {
