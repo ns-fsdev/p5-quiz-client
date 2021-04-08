@@ -1,6 +1,10 @@
 /*
    Quiz-CLIENT
    APP.js
+
+   login form
+   client authentication call,
+   then call dashboard
 */
 
 
@@ -31,7 +35,8 @@ function Auth () {
         event.preventDefault();
         console.log(email)
         console.log(password)
-        let res = await fetch('http://localhost:3000/login', {
+        /*  MODIFY CORS Error  */
+        let res = await fetch('https://p5-quiz-server.herokuapp.com/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -54,7 +59,7 @@ function Auth () {
         console.log(email)
         console.log(password)
         console.log(retypePassword)
-        let res = await fetch('http://localhost:3000/signup', {
+        let res = await fetch('https://p5-quiz-server.herokuapp.com/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
