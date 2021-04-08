@@ -3,7 +3,7 @@
    APP.js
 
    login form
-   client authentication call,
+   client authentication,
    then call dashboard.js
 */
 
