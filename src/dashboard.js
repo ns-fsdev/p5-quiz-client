@@ -1,6 +1,9 @@
 /*
    Quiz-CLIENT
    Dashboard.js
+
+   after authentication , dashboard.js is called.
+   shows main body of app
 */
 
 
@@ -25,7 +28,7 @@ function Dashboard() {
 
     const [userId, setUserId] = useState();
 
-    let apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+    let apiUrl = process.env.REACT_APP_API_URL;
 
 
     const fetchCategories = async () => {
@@ -33,8 +36,7 @@ function Dashboard() {
 
         // let res = await fetch('http://localhost:3000/api/v1/categories');
         //   https://cohort11a-capstone-api.herokuapp.com
-        //   console.log(process.env.API_URL)
-        //   console.log(process.env.REACT_APP_API_URL)
+
         console.log(`${apiUrl}/api/v1/categories`)
         let res = await fetch(`${apiUrl}/api/v1/categories?token=${localStorage.getItem('token')}`);
         let data = await res.json();
@@ -86,7 +88,7 @@ function Dashboard() {
     const fetchQuestionsForCategory = async (id) => {
         console.log('fetch questions for this category id', id);
         console.log('userId', userId)
-        let res = await fetch(`http://localhost:3000/api/v1/categories/${id}/questions?token=${token}&userId=${userId}`);
+        let res = await fetch(`${apiUrl}/api/v1/categories/${id}/questions?token=${token}&userId=${userId}`);
         let data = await res.json();
         console.log(data);
         data = data.reverse()

@@ -4,7 +4,7 @@
 
    login form
    client authentication call,
-   then call dashboard
+   then call dashboard.js
 */
 
 
