@@ -32,7 +32,7 @@ function Dashboard() {
 
 
     const fetchCategories = async () => {
-        console.log('this will fetch the categories');
+        console.log('call fetchCategories');
 
         // let res = await fetch('http://localhost:3000/api/v1/categories');
         //   https://cohort11a-capstone-api.herokuapp.com
