@@ -34,7 +34,7 @@ function Dashboard() {
     const [token, setToken] = useState();
 
     const [userId, setUserId] = useState();
-
+    // HEROKU env var for React App URL
     let apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000' ;
 
 

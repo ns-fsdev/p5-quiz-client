@@ -20,6 +20,8 @@ import React, {useEffect, useState} from "react";
 
 import {Button, List, Collapse, Row, Col, Divider, notification} from 'antd';
 const { Panel } = Collapse;
+// HEROKU env var for React App URL
+let apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000' ;
 
 
 
@@ -35,8 +37,9 @@ function Auth () {
         console.log(password)
         /*  MODIFY CORS Error  */
         // CALL SERVER
+        // LOCAL URL  http://localhost:3000/login
         // HEROKU URL https://p5-quiz-server.herokuapp.com/login
-        let res = await fetch('http://localhost:3000/login', {
+        let res = await fetch(`${apiUrl}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -59,7 +62,7 @@ function Auth () {
         console.log(email)
         console.log(password)
         console.log(retypePassword)
-        let res = await fetch('http://localhost:3000/signup', {
+        let res = await fetch(`${apiUrl}/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
