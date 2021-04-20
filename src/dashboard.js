@@ -2,17 +2,18 @@
    Quiz-CLIENT
    Dashboard.js
 
-   after authentication , dashboard.js is called.
-   shows main body of app
+   after authentication ,
+   dashboard.js is called - shows main body of app
 */
 
 
-import logo from './logo.svg';
+
 import './App.css';
 
 import React, {useEffect, useState} from "react";
 
-import { Button, List, Collapse, Breadcrumb } from 'antd';
+import { Button, List, Collapse } from 'antd';
+import { CloseCircleTwoTone } from '@ant-design/icons';
 const { Panel } = Collapse;
 
 
@@ -20,15 +21,21 @@ function Dashboard() {
 
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState();
-    const [questions, setQuestions] = useState();
 
+    const [questions, setQuestions] = useState();
     const [questionTxt, setQuestionTxt] = useState('');
+
+
+
+    const [questionId, setQuestionId] = useState();
+    const [answerTxt, setAnswerTxt] = useState('');
+    const [answers, setAnswers] = useState();
 
     const [token, setToken] = useState();
 
     const [userId, setUserId] = useState();
 
-    let apiUrl = process.env.REACT_APP_API_URL;
+    let apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000' ;
 
 
     const fetchCategories = async () => {
@@ -51,6 +58,8 @@ function Dashboard() {
         setUserId(u.userId);
     };
 
+
+    /*    LOGIN Status    */
     const isLoggedIn = () => {
         if(localStorage.getItem('token')){
             setToken(localStorage.getItem('token'));
@@ -63,9 +72,9 @@ function Dashboard() {
         }
 
     };
-
+    // get Categories, loads once only on app start
     useEffect(() => {
-        // this code will run only once on component mount
+
         if(isLoggedIn()){
             fetchCategories()
         } else {
@@ -73,16 +82,12 @@ function Dashboard() {
         }
     }, [])
 
+
     useEffect(() => {
         // this code is going to run whenever the selectedCategory changes
-        // fetchQuestions() TheTodo: fetch and show the questions
+
     }, [selectedCategory])
 
-    // useEffect(() => {
-    //   // this code will run every time the someStateVariable changes
-    //   // this code will run every time var2 OR someStateVariable changes
-    //   // write code here that reloads the page as a side effect of var2 OR someStateVariable changing
-    // }, [someStateVariable, var2])
 
 
     const fetchQuestionsForCategory = async (id) => {
@@ -91,12 +96,12 @@ function Dashboard() {
         let res = await fetch(`${apiUrl}/api/v1/categories/${id}/questions?token=${token}&userId=${userId}`);
         let data = await res.json();
         console.log(data);
-        data = data.reverse()
         setQuestions(data);
-        // setCategories(data);
+
 
     };
 
+    // ADD QUESTION     -    call server
     const createNewQuestion = async () => {
         console.log('create a question for the category id', selectedCategory)
 
@@ -111,29 +116,64 @@ function Dashboard() {
         fetchQuestionsForCategory(selectedCategory);
         setQuestionTxt('')
 
-        // the usual fetch request / HINT : look up the stock API request
-        // 1. Make a POST request to create a question
-        // 2. Once the call is successful
-        // 3. Fetch the questions for a category again (reload the questions)
-        // 4. done!
     };
 
 
+    //  ADD ANSWER
     const createANewAnswer = async () => {
-        // you will need something called selectedQuestion to keep a track of the question that has been selected
-        // a state variable to store the answer text that the user types in
 
-        // the usual fetch request / HINT : look up the stock API request
-        // 1. Make a POST request to create an answer
-        // 2. Once the call is successful
-        // 3. Fetch the questions for a category again (reload the questions)
-        // 4. done!
+        console.log('call createNewAnswer')
+        console.log('quest id')
+        console.log(questionId)
+        let res = await fetch(`${apiUrl}/api/v1/categories/${selectedCategory}/questions/${questionId}/answers?token=${token}`, {
+          method: 'POST',
+          headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+          body: JSON.stringify({answerTxt: answerTxt, questionId: questionId})
+        });
 
-
-        // - Try to delete the question
-        // Try to delete an answer
+        fetchQuestionsForCategory(selectedCategory);
+        setAnswerTxt('')
     };
 
+
+    //  DELETE ANSWER
+    const deleteAnswer = async (answer_id) => {
+
+        console.log('call deleteAnswer')
+        console.log('sel category ', selectedCategory)
+        let res = await fetch(`${apiUrl}/api/v1/categories/${selectedCategory}/answers?token=${token}`, {
+            method: 'DELETE',
+            headers: {
+                      'Content-Type': 'application/json'
+                     },
+            body: JSON.stringify( {answerId: answer_id} )
+        });
+
+        fetchQuestionsForCategory(selectedCategory);
+    };
+
+
+    //  DELETE QUESTION
+    const deleteQuestion = async (question_id) => {
+      console.log('Calling deleteQuestion,  ques ID: ', question_id);
+
+        let res = await fetch(`${apiUrl}/api/v1/categories/${selectedCategory}/questions?token=${token}`, {
+            method: 'DELETE',
+            headers: {
+                      'Content-Type': 'application/json'
+                     },
+            body: JSON.stringify( {questionId: question_id} )
+        });
+
+        fetchQuestionsForCategory(selectedCategory);
+    };
+
+
+
+    //    LOGOUT
     const logout = async () => {
         localStorage.removeItem('token');
         window.location.href = '/';
@@ -141,11 +181,13 @@ function Dashboard() {
     };
 
 
-    // 1. Hide the Ui unless the user is logged in
+
+     //  return  USER Interface  UI
 
 
     return (
         <>
+            {/* TITLE BAR */}
             <div className="grid grid-cols-12">
                 <div className={'col-span-full border p-5'}>
                     <h1 className={'text-center text-3xl'}>
@@ -157,7 +199,10 @@ function Dashboard() {
 
             </div>
 
+
+            {/*   CATEGORY WINDOW (Left)   */}
             <div className="grid grid-cols-12">
+
                 <div className={'col-span-full md:col-span-3 lg:col-span-2 border p-5'}>
 
 
@@ -178,101 +223,95 @@ function Dashboard() {
 
                     <List
                         size="large"
-                        header={<div className={'font-bold'}>Categories List</div>}
-                        // footer={<div>Footer</div>}
+                        header={<div className={'font-bold'}> Categories List </div>}
                         bordered
                         dataSource={categories}
                         renderItem={category => <List.Item>
-                            <div className={category.id == selectedCategory ? 'cursor-pointer text-blue-500 font-bold' : 'cursor-pointer'} onClick={() => {
-                                setSelectedCategory(category.id);
-                                fetchQuestionsForCategory(category.id)
-                            }}>
-                                {category.name}
-                            </div>
+                                                <div className={category.id == selectedCategory ? 'cursor-pointer text-blue-500 font-bold' : 'cursor-pointer'} onClick={() => {
+                                                     setSelectedCategory(category.id);
+                                                    fetchQuestionsForCategory(category.id)
+                                                }}>
+                                                {category.name}
+                                                </div>
 
-                        </List.Item>}
+                                                </List.Item> }
                     />
 
 
                 </div>
 
+
+                {/* QUESTIONS Window */}
                 <div className={'col-span-full md:col-span-9 lg:col-span-10 border p-5'}>
 
-                    {/*<button className={'border p-2 pl-4 pr-4 bg-gray-200'} onClick={createNewQuestion}>New Question</button>*/}
-
-                    {/*<Breadcrumb>*/}
-                    {/*    <Breadcrumb.Item>Home</Breadcrumb.Item>*/}
-                    {/*    <Breadcrumb.Item>*/}
-                    {/*        <a href="">Application Center</a>*/}
-                    {/*    </Breadcrumb.Item>*/}
-                    {/*    <Breadcrumb.Item>*/}
-                    {/*        <a href="">Application List</a>*/}
-                    {/*    </Breadcrumb.Item>*/}
-                    {/*    <Breadcrumb.Item>An Application</Breadcrumb.Item>*/}
-                    {/*</Breadcrumb>*/}
 
 
-                    <div className={'border h-80'}>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-                        <h1 className={'text-4xl'}>this is a box</h1>
-
-                    </div>
 
                     <br/>
                     <br/>
                     <br/>
-                    {selectedCategory && <div>
-                        <input value={questionTxt} onChange={(ev) => {
-                            setQuestionTxt(ev.currentTarget.value);
-                        }} type="text" className={'border p-1 mr-5 w-2/3'}/>
-                        <Button type={'primary'} onClick={createNewQuestion}>Create new question</Button>
-                        <br/>
-                        <br/>
-                    </div>}
+
+                    {selectedCategory &&
+                        <div>
+                                {/* INPUT FIELD and  BUTTON -  Create New Question  */}
+                                <input value={questionTxt} onChange={(ev) => {
+                                    setQuestionTxt(ev.currentTarget.value);
+                                }}
+                                type="text" className={'border p-1 mr-5 w-2/3'}/>
+                                <Button type={'primary'} onClick={createNewQuestion}>Create new question</Button>
+                                <br/>
+                                <br/>
+                        </div>
+                    }
 
 
-                    {/*<ul>*/}
-                    {/*    {questions && questions.map((question) => {*/}
-                    {/*        return <li key={question.id}>*/}
-                    {/*            /!*{question.questionTxt} - {question.Answers.length}*!/*/}
-                    {/*            {question.questionTxt} {question.Answers.length >0 && <span>- <span>{question.Answers.length}</span></span>}*/}
-                    {/*        </li>*/}
-                    {/*    })}*/}
-                    {/*</ul>*/}
 
 
+
+                    {/*      DISPLAY QUES ACCORDION        */}
 
                     {selectedCategory && <Collapse accordion>
                         {questions && questions.map((question, index) => {
-                            return <Panel header={question.questionTxt} key={index}>
+
+                            /*      DISPLAY QUESTION text      */
+
+                            return <Panel
+                                        header= {<div>
+                                                    {question.questionTxt}
+                                                </div>}
+                                        key={index}>
 
 
+                                {/*  ANSWER Input and Button */}
                                 <List
                                     size="small"
                                     // header={<div className={'font-bold'}>Answers List</div>}
                                     footer={<div>
-                                        <input value={questionTxt} onChange={(ev) => {
-                                            setQuestionTxt(ev.currentTarget.value);
-                                        }} type="text" className={'border p-1 mr-5 w-2/3'}/>
-                                        <Button type={'primary'} onClick={createANewAnswer}>Add Answer</Button>
-                                    </div>}
-                                    bordered
-                                    dataSource={question.Answers}
-                                    renderItem={answer => <List.Item>
-                                        <div>
-                                            {answer.answerTxt}
-                                        </div>
+                                                <input value={answerTxt} onChange={(ev) => {
+                                                  setAnswerTxt(ev.currentTarget.value);
+                                                  setQuestionId(question.id)
+                                                  }}
+                                                  type="text" className={'border p-1 mr-5 w-2/3'}/>
 
-                                    </List.Item>}
+                                                <Button type={'primary'} onClick={createANewAnswer}> Add Answer </Button>
+
+                                                <Button type={'primary'} onClick={ ()=> { deleteQuestion(question.id) }}> Delete Ques </Button>
+
+                                            </div> }
+                                    // bordered
+                                    dataSource={question.Answers}
+                                    renderItem={answer =>  <List.Item>
+                                                              {/*       DISPLAY ANSWER   &  DELETE ICON      */}
+                                                              <div>
+                                                                    <div> {answer.answerTxt}  <CloseCircleTwoTone onClick={() => {
+
+                                                                        deleteAnswer(answer.id);
+
+                                                                      }} />
+                                                                    </div>
+                                                                    {/* <div> {answer.id} </div>  */}
+                                                              </div>
+                                                           </List.Item>}
                                 />
 
 
@@ -282,7 +321,6 @@ function Dashboard() {
 
                     {!selectedCategory && <h1 className={'text-center text-xl uppercase tracking-wider text-blue-500'}>Select a category to get started</h1>}
 
-                    {/*{questions && <p>{JSON.stringify(questions)}</p>}*/}
                 </div>
 
             </div>
@@ -292,3 +330,5 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+{/* End */}

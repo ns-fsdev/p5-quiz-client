@@ -2,13 +2,11 @@
    Quiz-CLIENT
    APP.js
 
-   login form
-   client authentication,
+   login form uses client authentication,
    then call dashboard.js
 */
 
 
-import logo from './logo.svg';
 import './App.css';
 import {
     BrowserRouter as Router,
@@ -20,7 +18,7 @@ import Dashboard from "./dashboard";
 
 import React, {useEffect, useState} from "react";
 
-import {Button, List, Collapse, Breadcrumb, Row, Col, Divider, notification} from 'antd';
+import {Button, List, Collapse, Row, Col, Divider, notification} from 'antd';
 const { Panel } = Collapse;
 
 
@@ -36,7 +34,9 @@ function Auth () {
         console.log(email)
         console.log(password)
         /*  MODIFY CORS Error  */
-        let res = await fetch('https://p5-quiz-server.herokuapp.com/login', {
+        // CALL SERVER
+        // HEROKU URL https://p5-quiz-server.herokuapp.com/login
+        let res = await fetch('http://localhost:3000/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -53,13 +53,13 @@ function Auth () {
 
 
     };
-
+    // SignUp / Login  ,  CALL SERVER, DB
     const onSignUp = async (event) => {
         event.preventDefault();
         console.log(email)
         console.log(password)
         console.log(retypePassword)
-        let res = await fetch('https://p5-quiz-server.herokuapp.com/signup', {
+        let res = await fetch('http://localhost:3000/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -84,6 +84,7 @@ function Auth () {
     return (
         <div>
 
+            {/*  LOGIN FORM  */}
             <h1 className={'text-3xl text-center'}>Login Form</h1>
 
             <form onSubmit={onSignIn}>
@@ -101,8 +102,9 @@ function Auth () {
             </form>
 
 
-            <Divider />
+            <Divider/>
 
+            {/*  SIGNUP FORM  */}
             <h1 className={'text-3xl text-center'}>Signup Form</h1>
 
             <form onSubmit={onSignUp}>
