@@ -12,7 +12,7 @@ import './App.css';
 
 import React, {useEffect, useState} from "react";
 
-import { Button, List, Collapse } from 'antd';
+import { Button, Space, List, Collapse } from 'antd';
 import { CloseCircleTwoTone } from '@ant-design/icons';
 const { Panel } = Collapse;
 
@@ -44,7 +44,6 @@ function Dashboard() {
         // let res = await fetch('http://localhost:3000/api/v1/categories');
         //   https://cohort11a-capstone-api.herokuapp.com
 
-        console.log(`${apiUrl}/api/v1/categories`)
         let res = await fetch(`${apiUrl}/api/v1/categories?token=${localStorage.getItem('token')}`);
         let data = await res.json();
         console.log(data);
@@ -292,10 +291,11 @@ function Dashboard() {
                                                   setQuestionId(question.id)
                                                   }}
                                                   type="text" className={'border p-1 mr-5 w-2/3'}/>
-
+                                                <Space>
                                                 <Button type={'primary'} onClick={createANewAnswer}> Add Answer </Button>
 
                                                 <Button type={'primary'} onClick={ ()=> { deleteQuestion(question.id) }}> Delete Ques </Button>
+                                                </Space>
 
                                             </div> }
                                     // bordered
